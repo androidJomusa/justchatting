@@ -223,17 +223,18 @@ class ChattingRoomFirebaseSource : KoinComponent {
         groupId: String
     ) {
         membersMap.putAll(invitedMember)
-        val membersRef = FirebaseDatabase.getInstance().getReference("/members/$groupId")
-        membersRef.setValue(membersMap).addOnCompleteListener {
-            loadGroupMembers(groupId)
+        if(groupId != ""){
+            val membersRef = FirebaseDatabase.getInstance().getReference("/members/$groupId")
+            membersRef.setValue(membersMap).addOnCompleteListener {
+                loadGroupMembers(groupId)
 
-            membersMap.forEach {
-                val userGroupRef =
-                    FirebaseDatabase.getInstance().getReference("/user_groups/${it.key}/$groupId")
-                userGroupRef.setValue(createGroupName(membersMap, it))
+                membersMap.forEach {
+                    val userGroupRef =
+                        FirebaseDatabase.getInstance().getReference("/user_groups/${it.key}/$groupId")
+                    userGroupRef.setValue(createGroupName(membersMap, it))
+                }
             }
         }
-
     }
 
     fun exit(groupId: String) {
