@@ -15,7 +15,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModel { ChattingViewModel(get()) }
     viewModel { SelectGroupViewModel()}
-    viewModel { (intent: Bundle)->ChattingRoomViewModel(get(), intent) }
+    viewModel { ChattingRoomViewModel(get()) }
     single { FriendViewModel(get(), androidApplication())}
     viewModel { SettingsViewModel(get(), androidApplication()) }
     viewModel { LoginViewModel(get(), androidApplication()) }

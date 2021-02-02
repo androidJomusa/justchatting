@@ -1,7 +1,7 @@
 package com.example.justchatting.ui.chattingRoom
 
-import android.os.Bundle
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.justchatting.JustApp
 import com.example.justchatting.data.DTO.Message
@@ -9,10 +9,9 @@ import com.example.justchatting.data.DTO.UserModel
 import com.example.justchatting.repository.chattingRoom.ChattingRoomRepository
 import io.reactivex.schedulers.Schedulers
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 
-class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRepository, private val bundle : Bundle) : ViewModel(), KoinComponent{
-    var groupMembers : HashMap<String, UserModel> = HashMap()
+class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRepository) : ViewModel(), KoinComponent{
+    var groupMembers : MutableLiveData<HashMap<String, UserModel>> = MutableLiveData()
     var groupId : String = ""
 
     fun getChatLogs() : LiveData<ArrayList<Message>>{
@@ -21,15 +20,17 @@ class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRep
     fun getNewGroupId(): LiveData<String>{
         return chattingRoomRepository.getNewGroupId()
     }
-    fun setListener(groupId: String) {
-        chattingRoomRepository.setListener(groupId)
+    fun setChatLogAddListener(groupId: String) {
+        chattingRoomRepository.setChatLogAddListener(groupId)
     }
+
     fun createGroupId() {
-        chattingRoomRepository.createGroupId(groupMembers)
+        chattingRoomRepository.createGroupId()
     }
+
     fun sendText(text: String, groupId: String) {
         chattingRoomRepository.sendText(text, groupId)
-        chattingRoomRepository.pushFCM(text, groupMembers, groupId).observeOn(Schedulers.io())
+        chattingRoomRepository.pushFCM(text, groupId).observeOn(Schedulers.io())
             .subscribeOn(Schedulers.computation())
             .subscribe({
             },{
@@ -38,7 +39,7 @@ class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRep
     }
 
     fun loadGroupMembers(groupId: String?) {
-        chattingRoomRepository.loadGroupMembers(groupMembers, groupId)
+        chattingRoomRepository.loadGroupMembers(groupId)
     }
 
     fun getMembers(): LiveData<ArrayList<UserModel>> {
@@ -50,8 +51,10 @@ class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRep
         super.onCleared()
     }
 
-    fun addMember() {
-        chattingRoomRepository.addMember(groupMembers, groupId)
+    fun addMember(members: HashMap<String, UserModel>?) {
+        if (members != null) {
+            chattingRoomRepository.addMember(members, groupId)
+        }
     }
 
     fun exit() {
