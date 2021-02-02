@@ -272,6 +272,7 @@ class ChattingRoomFirebaseSource : KoinComponent {
             }
         })
     }
+
     private fun insertOneToOneChattingRoomId(friendId : String, groupId: String){
         val toRef = FirebaseDatabase.getInstance().getReference("/friends/$friendId/$uid")
         toRef.addListenerForSingleValueEvent(object : ValueEventListener {

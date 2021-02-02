@@ -3,27 +3,27 @@ package com.example.justchatting.ui.chattingRoom
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.justchatting.R
-import com.example.justchatting.data.DTO.UserModel
 import com.example.justchatting.base.BaseActivity
+import com.example.justchatting.data.DTO.UserModel
 import com.example.justchatting.databinding.ActivityChattingRoomBinding
 import com.example.justchatting.ui.chatting.SelectGroupActivity
 import kotlinx.android.synthetic.main.activity_chatting_room.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.DefinitionParameters
-import org.koin.core.parameter.parametersOf
-import kotlin.properties.ReadOnlyProperty
+
 
 private const val REQUEST_CODE = 1000
 
 class ChattingRoomActivity : BaseActivity<ActivityChattingRoomBinding>() {
 
-    private val viewModel: ChattingRoomViewModel by viewModel{parametersOf(intent.extras)}
+    private val viewModel: ChattingRoomViewModel by viewModel()
+
 
     private var groupId: String? = null
     private val friendsAdapter = FriendsAdapter()

@@ -20,15 +20,19 @@ class RegisterViewModel(
     var password: String? = null
     var name: String? = null
     var phoneNumber: String? = null
-    var selectedPhotoUri : Uri? = null
+    var selectedPhotoUri: Uri? = null
 
-    val successSignUp = MutableLiveData<Boolean>()
+    private val _successSignUp = MutableLiveData<Boolean>()
+    val successSignUp: LiveData<Boolean>
+        get() = _successSignUp
 
-    val errorToastMessage = MutableLiveData<String>()
+    private val _errorToastMessage = MutableLiveData<String>()
+    val errorToastMessage : LiveData<String>
+        get()  = _errorToastMessage
 
     fun signUp() {
         if (name.isNullOrEmpty() || email.isNullOrEmpty() || password.isNullOrEmpty() || phoneNumber.isNullOrEmpty()) {
-            errorToastMessage.value = "please check username, email, password, phone number"
+            _errorToastMessage.value = "please check username, email, password, phone number"
             return
         }
 
@@ -40,15 +44,15 @@ class RegisterViewModel(
                 .flatMap { imagePath ->
                     repository.saveUser(name!!, phoneNumber!!, imagePath, email!!)
                 })
-            .doOnSuccess{
-                successSignUp.value = true
+            .doOnSuccess {
+                _successSignUp.value = true
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                successSignUp.value = true
+                _successSignUp.value = true
             }, {
-                errorToastMessage.value = it.message
+                _errorToastMessage.value = it.message
             })
         )
     }

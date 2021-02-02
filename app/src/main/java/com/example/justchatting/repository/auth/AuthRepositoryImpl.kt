@@ -5,8 +5,9 @@ import android.net.Uri
 import com.example.justchatting.data.auth.AuthFirebaseSource
 import io.reactivex.Completable
 
-open class AuthRepositoryImpl(
-    val authFirebaseSource: AuthFirebaseSource
+class AuthRepositoryImpl(
+    private val authFirebaseSource: AuthFirebaseSource,
+    val context: Context
 ) : AuthRepository {
 
     override fun loginWithEmail(email: String, password: String) = authFirebaseSource.loginWithEmail(email, password)
@@ -23,6 +24,6 @@ open class AuthRepositoryImpl(
     ) = authFirebaseSource.saveUser(name, phoneNumber, firebaseImageResourcePath, email)
 
     override fun updateToken(): Completable = authFirebaseSource.updateToken()
-    override fun saveProfileImageToCache(applicationContext: Context): Completable = authFirebaseSource.saveProfileImageToCache(applicationContext)
+    override fun saveProfileImageToCache(): Completable = authFirebaseSource.saveProfileImageToCache(context)
 
 }
