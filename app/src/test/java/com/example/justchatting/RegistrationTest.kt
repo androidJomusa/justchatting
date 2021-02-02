@@ -6,18 +6,14 @@ import com.example.justchatting.ui.login.RegisterViewModel
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
-import org.mockito.MockitoAnnotations
 
 class RegistrationTest : AutoCloseKoinTest() {
 
@@ -106,8 +102,8 @@ class RegistrationTest : AutoCloseKoinTest() {
 
         Mockito.`when`(
             mockRepository.signUpWithEmail(
-                "tom@gmail.com",
-                "123123"
+                registerViewModel.email!!,
+                registerViewModel.password!!
             )
         ).thenReturn(Completable.error(Throwable("fail message")))
 
@@ -119,10 +115,10 @@ class RegistrationTest : AutoCloseKoinTest() {
 
         Mockito.`when`(
             mockRepository.saveUser(
-                "tom",
-                "010",
+                registerViewModel.name!!,
+                registerViewModel.phoneNumber!!,
                 "",
-                "tom@gmail.com"
+                registerViewModel.email!!
             )
         ).thenReturn(Single.just(true))
 

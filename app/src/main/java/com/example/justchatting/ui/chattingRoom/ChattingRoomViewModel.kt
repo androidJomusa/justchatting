@@ -1,6 +1,8 @@
 package com.example.justchatting.ui.chattingRoom
 
+import android.os.Bundle
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.justchatting.JustApp
 import com.example.justchatting.data.DTO.Message
@@ -10,30 +12,37 @@ import io.reactivex.schedulers.Schedulers
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class ChattingRoomViewModel : ViewModel(), KoinComponent{
-    val chattingRoomRepository : ChattingRoomRepository by inject()
-    var groupMembers : HashMap<String, UserModel> = HashMap()
-    var groupId : String = ""
+class ChattingRoomViewModel(
+    private val chattingRoomRepository: ChattingRoomRepository
+) : ViewModel(), KoinComponent {
+    var groupMembers: HashMap<String, UserModel> = HashMap()
+    var groupId: String = ""
+    val memberUpdated = MutableLiveData<Boolean>()
 
-    fun getChatLogs() : LiveData<ArrayList<Message>>{
+    fun getChatLogs(): LiveData<ArrayList<Message>> {
         return chattingRoomRepository.getChatLogs()
     }
-    fun getNewGroupId(): LiveData<String>{
+
+    fun getNewGroupId(): LiveData<String> {
         return chattingRoomRepository.getNewGroupId()
     }
+
     fun setListener(groupId: String) {
         chattingRoomRepository.setListener(groupId)
     }
+
     fun createGroupId() {
         chattingRoomRepository.createGroupId(groupMembers)
     }
+
     fun sendText(text: String, groupId: String) {
         chattingRoomRepository.sendText(text, groupId)
-        chattingRoomRepository.pushFCM(text, groupMembers, groupId).observeOn(Schedulers.io())
+        chattingRoomRepository.pushFCM(text, groupMembers, groupId)
+            .observeOn(Schedulers.io())
             .subscribeOn(Schedulers.computation())
             .subscribe({
 
-            },{
+            }, {
 
             })
     }
@@ -52,7 +61,14 @@ class ChattingRoomViewModel : ViewModel(), KoinComponent{
     }
 
     fun addMember() {
-        chattingRoomRepository.addMember(groupMembers, groupId)
+        val invitedMembers = bundle!!.getSerializable("invited member") as HashMap<String, UserModel>
+        groupMembers.putAll(invitedMembers)
+
+        if (groupId == "") {
+            memberUpdated.value = true
+        } else {
+            chattingRoomRepository.addMember(groupMembers, groupId)
+        }
     }
 
     fun exit() {

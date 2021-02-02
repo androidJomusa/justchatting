@@ -30,7 +30,6 @@ class ChattingLogFragment : BaseFragment<FragmentChattingLogBinding>() {
             adapter = chattingRoomAdapter
         }
 
-        Log.d("그룹 아이디", viewModel.groupId)
         if(viewModel.groupId != ""){
             viewModel.setListener(viewModel.groupId)
         }

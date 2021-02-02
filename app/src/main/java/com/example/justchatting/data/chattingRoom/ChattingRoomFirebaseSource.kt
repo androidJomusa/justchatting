@@ -232,7 +232,6 @@ class ChattingRoomFirebaseSource : KoinComponent {
                 userGroupRef.setValue(createGroupName(member, it))
             }
         }
-
     }
 
     fun exit(groupId: String) {
@@ -254,6 +253,7 @@ class ChattingRoomFirebaseSource : KoinComponent {
         })
 
     }
+
     private fun isOneToOne(groupMembers: HashMap<String, UserModel>) = groupMembers.size == 2
     private fun isAlone(groupMembers: HashMap<String, UserModel>) = groupMembers.size == 1
     private fun insertAloneChattingRoomId(friendId : String, groupId: String){
@@ -272,6 +272,7 @@ class ChattingRoomFirebaseSource : KoinComponent {
             }
         })
     }
+
     private fun insertOneToOneChattingRoomId(friendId : String, groupId: String){
         val toRef = FirebaseDatabase.getInstance().getReference("/friends/$friendId/$uid")
         toRef.addListenerForSingleValueEvent(object : ValueEventListener {

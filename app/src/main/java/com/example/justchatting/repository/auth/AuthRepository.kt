@@ -16,5 +16,5 @@ interface AuthRepository {
         email: String
     ): Single<Boolean>
     fun updateToken(): Completable
-    fun saveProfileImageToCache(applicationContext: Context): Completable
+    fun saveProfileImageToCache(): Completable
 }
