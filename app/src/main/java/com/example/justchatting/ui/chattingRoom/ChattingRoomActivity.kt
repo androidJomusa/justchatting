@@ -25,7 +25,6 @@ class ChattingRoomActivity : BaseActivity<ActivityChattingRoomBinding>() {
 
     private val viewModel: ChattingRoomViewModel by viewModel{parametersOf(intent.extras)}
 
-
     private var groupId: String? = null
     private val friendsAdapter = FriendsAdapter()
 
@@ -43,13 +42,15 @@ class ChattingRoomActivity : BaseActivity<ActivityChattingRoomBinding>() {
             setHasFixedSize(true)
             adapter = friendsAdapter
         }
+
         binding.navView.getHeaderView(0)
             .findViewById<ImageView>(R.id.chatting_room_drawer_add_member).setOnClickListener {
             val intent = Intent(this, SelectGroupActivity::class.java)
-            intent.putExtra("members", viewModel.groupMembers)
+            intent.putExtra("members", viewModel.getMembers().value)
             intent.putExtra("before", "chattingRoomActivity")
             startActivityForResult(intent, REQUEST_CODE)
         }
+
         binding.navView.getHeaderView(0).findViewById<ImageView>(R.id.chtting_room_drawer_exit)
             .setOnClickListener {
                 viewModel.exit()
@@ -62,10 +63,8 @@ class ChattingRoomActivity : BaseActivity<ActivityChattingRoomBinding>() {
         groupId = intent.getStringExtra("groupId")
 
         if (groupId == "") {
-            viewModel.groupMembers =
-                intent.getSerializableExtra("groupMembers") as HashMap<String, UserModel>
-            friendsAdapter.setUsers(mapToArrayList(viewModel.groupMembers))
-            friendsAdapter.notifyDataSetChanged()
+            val initMembers = intent.getSerializableExtra("groupMembers") as HashMap<String, UserModel>
+            viewModel.addMember(initMembers)
         } else {
             viewModel.groupId = groupId!!
             viewModel.loadGroupMembers(groupId)
@@ -108,20 +107,8 @@ class ChattingRoomActivity : BaseActivity<ActivityChattingRoomBinding>() {
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val invitedMember =
                 data.getSerializableExtra("invited member") as HashMap<String, UserModel>
-            viewModel.groupMembers.putAll(invitedMember)
 
-            if (viewModel.groupId == "") {
-                friendsAdapter.setUsers(mapToArrayList(viewModel.groupMembers))
-                friendsAdapter.notifyDataSetChanged()
-            } else {
-                viewModel.addMember()
-            }
+            viewModel.addMember(invitedMember)
         }
-    }
-
-    private fun mapToArrayList(hashMap: HashMap<String, UserModel>): ArrayList<UserModel> {
-        var arrayList = ArrayList(hashMap.values)
-        arrayList.sortBy { it.username }
-        return arrayList
     }
 }

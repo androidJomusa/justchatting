@@ -32,6 +32,8 @@ class ChattingRoomFirebaseSource : KoinComponent {
     val members: LiveData<ArrayList<UserModel>>
         get() = _members
 
+    val membersMap = HashMap<String, UserModel>()
+
     val uid = FirebaseAuth.getInstance().uid
 
     fun toArrayList(groupMembers: HashMap<String, UserModel>){
@@ -69,27 +71,27 @@ class ChattingRoomFirebaseSource : KoinComponent {
         })
     }
 
-    fun createGroupId(groupMembers: HashMap<String, UserModel>) {
+    fun createGroupId() {
 
         val groupId = FirebaseDatabase.getInstance().getReference("/chatrooms").push().key
         JustApp.roomId = groupId!!
 
         val membersRef = FirebaseDatabase.getInstance().getReference("/members/$groupId")
-        membersRef.setValue(groupMembers).addOnCompleteListener {
-            loadGroupMembers(groupMembers, groupId)
+        membersRef.setValue(membersMap).addOnCompleteListener {
+            loadGroupMembers(groupId)
 
-            groupMembers.forEach {
+            membersMap.forEach {
                 val userGroupRef =
                     FirebaseDatabase.getInstance().getReference("/user_groups/${it.key}/$groupId")
-                userGroupRef.setValue(createGroupName(groupMembers, it))
+                userGroupRef.setValue(createGroupName(membersMap, it))
             }
             _newGroupId.postValue(groupId)
         }
 
-        if(isAlone(groupMembers)){
+        if(isAlone(membersMap)){
             insertAloneChattingRoomId(uid!!, groupId)
-        } else if(isOneToOne(groupMembers)){
-            val friendId = getFriendId(groupMembers)
+        } else if(isOneToOne(membersMap)){
+            val friendId = getFriendId(membersMap)
             insertAloneChattingRoomId(friendId, groupId)
             insertOneToOneChattingRoomId(friendId, groupId)
         }
@@ -165,7 +167,6 @@ class ChattingRoomFirebaseSource : KoinComponent {
     }
 
     fun loadGroupMembers(
-        groupMembers: HashMap<String, UserModel>,
         groupId: String?
     ) {
         JustApp.roomId = groupId!!
@@ -183,31 +184,30 @@ class ChattingRoomFirebaseSource : KoinComponent {
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val user = snapshot.getValue(UserModel::class.java) ?: return
-                groupMembers[user.uid] = user
-                toArrayList(groupMembers)
+                membersMap[user.uid] = user
+                toArrayList(membersMap)
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
                 val user = snapshot.getValue(UserModel::class.java) ?: return
-                groupMembers.remove(user.uid)
-                toArrayList(groupMembers)
+                membersMap.remove(user.uid)
+                toArrayList(membersMap)
             }
         })
     }
 
     fun pushFCM(
         text: String,
-        groupMembers: HashMap<String, UserModel>,
         groupId: String
     ): Completable {
         var notificationInfo =
             NotificationInfo(
-                title = groupMembers[FirebaseAuth.getInstance().uid]!!.username,
+                title = membersMap[FirebaseAuth.getInstance().uid]!!.username,
                 body = text,
                 chatRoomId = groupId
             )
         var registrationIds = TokenParser()
-            .parser(groupMembers)
+            .parser(membersMap)
 
         var notificationRequest =
             NotificationRequest(
@@ -219,17 +219,18 @@ class ChattingRoomFirebaseSource : KoinComponent {
     }
 
     fun addMember(
-        member: java.util.HashMap<String, UserModel>,
+        invitedMember: java.util.HashMap<String, UserModel>,
         groupId: String
     ) {
+        membersMap.putAll(invitedMember)
         val membersRef = FirebaseDatabase.getInstance().getReference("/members/$groupId")
-        membersRef.setValue(member).addOnCompleteListener {
-            loadGroupMembers(member, groupId)
+        membersRef.setValue(membersMap).addOnCompleteListener {
+            loadGroupMembers(groupId)
 
-            member.forEach {
+            membersMap.forEach {
                 val userGroupRef =
                     FirebaseDatabase.getInstance().getReference("/user_groups/${it.key}/$groupId")
-                userGroupRef.setValue(createGroupName(member, it))
+                userGroupRef.setValue(createGroupName(membersMap, it))
             }
         }
 

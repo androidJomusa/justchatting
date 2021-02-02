@@ -1,7 +1,6 @@
 package com.example.justchatting.ui.chattingRoom
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,7 +9,6 @@ import com.example.justchatting.base.BaseFragment
 import com.example.justchatting.databinding.FragmentChattingLogBinding
 import kotlinx.android.synthetic.main.fragment_chatting_log.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChattingLogFragment : BaseFragment<FragmentChattingLogBinding>() {
     private lateinit var chattingRoomAdapter: ChattingLogdapter
@@ -30,9 +28,8 @@ class ChattingLogFragment : BaseFragment<FragmentChattingLogBinding>() {
             adapter = chattingRoomAdapter
         }
 
-        Log.d("그룹 아이디", viewModel.groupId)
         if(viewModel.groupId != ""){
-            viewModel.setListener(viewModel.groupId)
+            viewModel.setChatLogAddListener(viewModel.groupId)
         }
 
         viewModel.getChatLogs().observe(this.viewLifecycleOwner, Observer {
@@ -54,12 +51,10 @@ class ChattingLogFragment : BaseFragment<FragmentChattingLogBinding>() {
 
         viewModel.getNewGroupId().observe(this.viewLifecycleOwner , Observer {newId->
             viewModel.groupId = newId
-            viewModel.setListener(viewModel.groupId)
+            viewModel.setChatLogAddListener(viewModel.groupId)
             viewModel.sendText(chatting_room_edittext_input.text.toString(), viewModel.groupId)
             chatting_room_edittext_input.setText("")
         })
-
-
     }
 
     override fun getLayoutId() = R.layout.fragment_chatting_log

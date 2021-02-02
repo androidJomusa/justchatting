@@ -27,32 +27,30 @@ class ChattingRoomRepositoryImpl(private val chattingRoomFirebaseSource: Chattin
         return chattingRoomFirebaseSource.newGroupId
     }
 
-    override fun setListener(groupId: String) {
+    override fun setChatLogAddListener(groupId: String) {
         chattingRoomFirebaseSource.setListener(groupId)
     }
 
-    override fun createGroupId(groupMembersMap: HashMap<String, UserModel>) {
-        chattingRoomFirebaseSource.createGroupId(groupMembersMap)
+    override fun createGroupId() {
+        chattingRoomFirebaseSource.createGroupId()
     }
 
     override fun loadGroupMembers(
-        groupMembers: java.util.HashMap<String, UserModel>,
         groupId: String?
     ) {
-        chattingRoomFirebaseSource.loadGroupMembers(groupMembers, groupId)
+        chattingRoomFirebaseSource.loadGroupMembers(groupId)
     }
 
     override fun pushFCM(
         text: String,
-        groupMembers: HashMap<String, UserModel>,
         groupId: String
-    ): Completable = chattingRoomFirebaseSource.pushFCM(text, groupMembers, groupId)
+    ): Completable = chattingRoomFirebaseSource.pushFCM(text, groupId)
 
     override fun addMember(
-        member: java.util.HashMap<String, UserModel>,
+        invitedMember: java.util.HashMap<String, UserModel>,
         groupId: String
     ) {
-        chattingRoomFirebaseSource.addMember(member, groupId)
+        chattingRoomFirebaseSource.addMember(invitedMember, groupId)
     }
 
     override fun exit(groupId: String) {
