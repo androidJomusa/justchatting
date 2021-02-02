@@ -19,17 +19,17 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository, appl
     val disposable = CompositeDisposable()
     var profileImage: MutableLiveData<Bitmap?> = MutableLiveData()
     val notificationConfig: MutableLiveData<Boolean> = MutableLiveData()
+    val errorToastMessage = MutableLiveData<String>()
 
     init {
         notificationConfig.value = settingsRepository.getNotificationConfig()
     }
-
-    fun loadMyProfileImage() {
-        profileImage.value = settingsRepository.loadImage(getApplication<Application>().applicationContext)
-    }
-
     fun setNotificationConfig(boolean: Boolean) {
         settingsRepository.setNotificationConfig(boolean)
+    }
+
+    fun loadMyProfileImage() {
+        profileImage.value = settingsRepository.loadImage(getApplication())
     }
 
     fun saveProfileImageToCache() {
@@ -43,7 +43,7 @@ class SettingsViewModel(private val settingsRepository: SettingsRepository, appl
             .subscribe({
                 settingsRepository.editProfileImageUrl(it)
             }, {
-
+                errorToastMessage.value = "failed to upload profile image"
             })
         )
     }

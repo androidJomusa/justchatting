@@ -7,8 +7,7 @@ import com.example.justchatting.repository.chatting.ChattingRepository
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class ChattingViewModel : ViewModel(), KoinComponent{
-    private val chattingRepository : ChattingRepository by inject()
+class ChattingViewModel( private val chattingRepository : ChattingRepository) : ViewModel(), KoinComponent{
 
     fun getChattingRooms(): LiveData<ArrayList<ChattingRoom>> {
         return chattingRepository.getChattingRooms()

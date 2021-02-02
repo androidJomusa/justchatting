@@ -10,10 +10,9 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import com.example.justchatting.ui.friend.FriendFragment.AddResult
 
-class FriendViewModel(application: Application) : AndroidViewModel(application), KoinComponent{
+class FriendViewModel(private val friendRepository : FriendRepository, application: Application) : AndroidViewModel(application), KoinComponent{
 
     private val selectGroupRepository : SelectGroupRepository by inject()
-    private val friendRepository : FriendRepository by inject()
     private var friends : HashMap<String, UserModel> = HashMap()
 
     fun setFriendListChangeListener(){

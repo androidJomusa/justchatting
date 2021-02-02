@@ -1,5 +1,6 @@
 package com.example.justchatting.ui.chattingRoom
 
+import android.os.Bundle
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.example.justchatting.JustApp
@@ -10,8 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class ChattingRoomViewModel : ViewModel(), KoinComponent{
-    val chattingRoomRepository : ChattingRoomRepository by inject()
+class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRepository, private val bundle : Bundle) : ViewModel(), KoinComponent{
     var groupMembers : HashMap<String, UserModel> = HashMap()
     var groupId : String = ""
 
@@ -32,7 +32,6 @@ class ChattingRoomViewModel : ViewModel(), KoinComponent{
         chattingRoomRepository.pushFCM(text, groupMembers, groupId).observeOn(Schedulers.io())
             .subscribeOn(Schedulers.computation())
             .subscribe({
-
             },{
 
             })

@@ -9,7 +9,9 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.example.justchatting.R
 import com.example.justchatting.base.BaseFragment
 import com.example.justchatting.databinding.FragmentSettingsBinding
@@ -42,13 +44,15 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             intent.type = "image/*"
             startActivityForResult(intent, RegisterActivity.PERMISSIONS_REQUEST_READ_CONTACTS)
         }
+        viewModel.errorToastMessage.observe(this.viewLifecycleOwner, Observer {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        })
 
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RegisterActivity.PERMISSIONS_REQUEST_READ_CONTACTS && resultCode == Activity.RESULT_OK && data != null) {
-
                 viewModel.profileImage.value = if (Build.VERSION.SDK_INT < 28) {
                      MediaStore.Images.Media.getBitmap(
                         requireActivity().contentResolver,

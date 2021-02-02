@@ -239,11 +239,9 @@ class ChattingRoomFirebaseSource : KoinComponent {
         val uid = FirebaseAuth.getInstance().uid
         FirebaseDatabase.getInstance().getReference("/members/$groupId/$uid").removeValue()
         FirebaseDatabase.getInstance().getReference("/user_groups/$uid/$groupId").removeValue()
-
         FirebaseDatabase.getInstance().getReference("/members").child(groupId).addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
             }
-
             override fun onDataChange(snapshot: DataSnapshot) {
                 if(snapshot.childrenCount.toInt() == 0){
                     snapshot.ref.removeValue()
@@ -252,8 +250,8 @@ class ChattingRoomFirebaseSource : KoinComponent {
                 }
             }
         })
-
     }
+
     private fun isOneToOne(groupMembers: HashMap<String, UserModel>) = groupMembers.size == 2
     private fun isAlone(groupMembers: HashMap<String, UserModel>) = groupMembers.size == 1
     private fun insertAloneChattingRoomId(friendId : String, groupId: String){

@@ -15,12 +15,17 @@ import com.example.justchatting.databinding.ActivityChattingRoomBinding
 import com.example.justchatting.ui.chatting.SelectGroupActivity
 import kotlinx.android.synthetic.main.activity_chatting_room.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.DefinitionParameters
+import org.koin.core.parameter.parametersOf
+import kotlin.properties.ReadOnlyProperty
 
 private const val REQUEST_CODE = 1000
 
 class ChattingRoomActivity : BaseActivity<ActivityChattingRoomBinding>() {
 
-    private val viewModel: ChattingRoomViewModel by viewModel()
+    private val viewModel: ChattingRoomViewModel by viewModel{parametersOf(intent.extras)}
+
+
     private var groupId: String? = null
     private val friendsAdapter = FriendsAdapter()
 
