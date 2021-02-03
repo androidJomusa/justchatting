@@ -14,6 +14,7 @@ interface ChattingRoomRepository {
         text: String,
         groupId: String
     )
+    fun fetchError() : LiveData<Boolean>
     fun setChatLogAddListener(groupId: String)
     fun createGroupId()
     fun loadGroupMembers(

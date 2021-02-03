@@ -31,7 +31,6 @@ class AuthFirebaseSource : KoinComponent {
                 } else {
                     emitter.onError(it.exception!!)
                 }
-
             }
         }
 

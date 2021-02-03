@@ -1,6 +1,8 @@
 package com.example.justchatting
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import com.example.justchatting.data.DTO.UserModel
@@ -19,12 +21,13 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.MockitoAnnotations
 import java.lang.Exception
 import kotlin.text.Typography.times
 
-class SettingsTest : AutoCloseKoinTest(){
+class SettingsViewModelTest : AutoCloseKoinTest(){
     val settingsRepository: SettingsRepository by inject()
 
     @Mock
@@ -57,9 +60,10 @@ class SettingsTest : AutoCloseKoinTest(){
     fun 프로필_이미지_변경_성공() {
 
         val settingsViewModel = SettingsViewModel(settingsRepository, application)
-        Mockito.`when`(settingsRepository.uploadProfileImage(null)).thenReturn(Single.just(""))
+        val uri: Uri = mock(Uri::class.java)
+        Mockito.`when`(settingsRepository.uploadProfileImage(uri)).thenReturn(Single.just(""))
 
-        settingsViewModel.uploadProfileImage(null)
+        settingsViewModel.uploadProfileImage(uri)
         Mockito.verify(settingsRepository, times(1)).editProfileImageUrl("")
     }
 
@@ -67,19 +71,22 @@ class SettingsTest : AutoCloseKoinTest(){
     fun 프로필_이미지_변경_실패() {
         val exception = Exception()
         val settingsViewModel = SettingsViewModel(settingsRepository, application)
-        Mockito.`when`(settingsRepository.uploadProfileImage(null)).thenReturn(Single.error(exception))
+        val uri: Uri = mock(Uri::class.java)
+        Mockito.`when`(settingsRepository.uploadProfileImage(uri)).thenReturn(Single.error(exception))
 
-        settingsViewModel.uploadProfileImage(null)
+        settingsViewModel.uploadProfileImage(uri)
         Assert.assertEquals(settingsViewModel.errorToastMessage.value!! , "failed to upload profile image")
     }
+
     @Test
     fun 프로필_캐시_이미지_불러오기(){
-        Mockito.`when`(settingsRepository.loadImage(application)).thenReturn(null)
+        val bitmap: Bitmap = mock(Bitmap::class.java)
+        Mockito.`when`(settingsRepository.loadImage(application)).thenReturn(bitmap)
         val settingsViewModel = SettingsViewModel(settingsRepository, application)
         settingsViewModel.profileImage.observeForever{}
         settingsViewModel.loadMyProfileImage()
 
-        Assert.assertEquals(settingsViewModel.profileImage.value, null )
+        Assert.assertEquals(settingsViewModel.profileImage.value, bitmap)
     }
 
     @Test

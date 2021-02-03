@@ -1,5 +1,6 @@
 package com.example.justchatting.ui.friend
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,7 +22,6 @@ class TabDialogFragment: DialogFragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         val view = inflater.inflate(R.layout.dialog_add_friend_layout, null)
         tabLayout = view.findViewById(R.id.dialog_add_friend_tab)
         tabLayout.addTab(tabLayout.newTab().setText("연락처로 추가"))

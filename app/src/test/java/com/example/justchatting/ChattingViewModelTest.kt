@@ -21,7 +21,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
-class ChattingTest : AutoCloseKoinTest(){
+class ChattingViewModelTest : AutoCloseKoinTest(){
 
     val chattingRepository: ChattingRepository by inject()
 
@@ -57,11 +57,12 @@ class ChattingTest : AutoCloseKoinTest(){
 
     @Test
     fun 대화방_불러오기_실패() {
-        Mockito.`when`(chattingRepository.getChattingRooms()).thenReturn(MutableLiveData(ArrayList()))
+        Mockito.`when`(chattingRepository.getChattingRooms()).thenReturn(MutableLiveData())
+        Mockito.`when`(chattingRepository.roomFetchError()).thenReturn(MutableLiveData<Boolean>(true))
 
         val chattingViewModel = ChattingViewModel(chattingRepository)
         chattingViewModel.getChattingRooms().observeForever{}
 
-        Assert.assertTrue(chattingViewModel.getChattingRooms().value!!.isEmpty())
+        Assert.assertEquals(chattingViewModel.roomFetchError().value, true)
     }
 }

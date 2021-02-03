@@ -18,6 +18,6 @@ val viewModelModule = module {
     viewModel { ChattingRoomViewModel(get()) }
     single { FriendViewModel(get(), androidApplication())}
     viewModel { SettingsViewModel(get(), androidApplication()) }
-    viewModel { LoginViewModel(get(), androidApplication()) }
+    viewModel { LoginViewModel(get()) }
     viewModel { RegisterViewModel(get()) }
 }

@@ -64,5 +64,5 @@ class ChattingRoomRepositoryImpl(private val chattingRoomFirebaseSource: Chattin
         chattingRoomFirebaseSource.sendText(text, groupId)
     }
 
-
+    override fun fetchError(): LiveData<Boolean> = chattingRoomFirebaseSource.chatLogFetchError
 }

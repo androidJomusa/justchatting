@@ -55,6 +55,10 @@ class ChattingLogFragment : BaseFragment<FragmentChattingLogBinding>() {
             viewModel.sendText(chatting_room_edittext_input.text.toString(), viewModel.groupId)
             chatting_room_edittext_input.setText("")
         })
+
+        viewModel.chatLogFetchError().observe(this.viewLifecycleOwner, Observer {
+            //에러 처리
+        })
     }
 
     override fun getLayoutId() = R.layout.fragment_chatting_log

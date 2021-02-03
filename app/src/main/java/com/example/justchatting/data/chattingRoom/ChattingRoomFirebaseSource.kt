@@ -32,6 +32,10 @@ class ChattingRoomFirebaseSource : KoinComponent {
     val members: LiveData<ArrayList<UserModel>>
         get() = _members
 
+    private val _chatLogFetchError: MutableLiveData<Boolean> = MutableLiveData()
+    val chatLogFetchError : LiveData<Boolean>
+        get() = _chatLogFetchError
+
     val membersMap = HashMap<String, UserModel>()
 
     val uid = FirebaseAuth.getInstance().uid
@@ -51,6 +55,7 @@ class ChattingRoomFirebaseSource : KoinComponent {
         val chatLogRef = FirebaseDatabase.getInstance().getReference("/messages/$groupId")
         chatLogRef.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(error: DatabaseError) {
+                _chatLogFetchError.value = true
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -223,17 +228,18 @@ class ChattingRoomFirebaseSource : KoinComponent {
         groupId: String
     ) {
         membersMap.putAll(invitedMember)
-        val membersRef = FirebaseDatabase.getInstance().getReference("/members/$groupId")
-        membersRef.setValue(membersMap).addOnCompleteListener {
-            loadGroupMembers(groupId)
+        if(groupId != ""){
+            val membersRef = FirebaseDatabase.getInstance().getReference("/members/$groupId")
+            membersRef.setValue(membersMap).addOnCompleteListener {
+                loadGroupMembers(groupId)
 
-            membersMap.forEach {
-                val userGroupRef =
-                    FirebaseDatabase.getInstance().getReference("/user_groups/${it.key}/$groupId")
-                userGroupRef.setValue(createGroupName(membersMap, it))
+                membersMap.forEach {
+                    val userGroupRef =
+                        FirebaseDatabase.getInstance().getReference("/user_groups/${it.key}/$groupId")
+                    userGroupRef.setValue(createGroupName(membersMap, it))
+                }
             }
         }
-
     }
 
     fun exit(groupId: String) {
@@ -271,6 +277,7 @@ class ChattingRoomFirebaseSource : KoinComponent {
             }
         })
     }
+
     private fun insertOneToOneChattingRoomId(friendId : String, groupId: String){
         val toRef = FirebaseDatabase.getInstance().getReference("/friends/$friendId/$uid")
         toRef.addListenerForSingleValueEvent(object : ValueEventListener {
