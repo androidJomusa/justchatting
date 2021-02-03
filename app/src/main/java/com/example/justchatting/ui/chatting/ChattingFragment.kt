@@ -46,6 +46,10 @@ class ChattingFragment : BaseFragment<FragmentChattingBinding>() {
             chattingRecyclerviewAdapter.setChattingList(it)
             chattingRecyclerviewAdapter.notifyDataSetChanged()
         })
+
+        viewModel.roomFetchError().observe(viewLifecycleOwner, Observer {
+            //에러 처리
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

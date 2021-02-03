@@ -15,4 +15,6 @@ class ChattingViewModel( private val chattingRepository : ChattingRepository) : 
     fun setChattingRoomListChangeListener() {
         chattingRepository.setChattingRoomListChangeListener()
     }
+
+    fun roomFetchError(): LiveData<Boolean> = chattingRepository.roomFetchError()
 }

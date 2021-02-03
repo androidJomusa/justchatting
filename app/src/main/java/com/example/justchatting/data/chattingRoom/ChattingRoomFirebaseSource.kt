@@ -32,6 +32,10 @@ class ChattingRoomFirebaseSource : KoinComponent {
     val members: LiveData<ArrayList<UserModel>>
         get() = _members
 
+    private val _chatLogFetchError: MutableLiveData<Boolean> = MutableLiveData()
+    val chatLogFetchError : LiveData<Boolean>
+        get() = _chatLogFetchError
+
     val membersMap = HashMap<String, UserModel>()
 
     val uid = FirebaseAuth.getInstance().uid
@@ -51,6 +55,7 @@ class ChattingRoomFirebaseSource : KoinComponent {
         val chatLogRef = FirebaseDatabase.getInstance().getReference("/messages/$groupId")
         chatLogRef.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(error: DatabaseError) {
+                _chatLogFetchError.value = true
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {

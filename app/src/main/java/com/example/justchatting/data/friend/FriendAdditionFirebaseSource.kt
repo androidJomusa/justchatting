@@ -22,7 +22,6 @@ class FriendAdditionFirebaseSource {
             return
 
         val friendEmailRef = FirebaseDatabase.getInstance().getReference("/email/$email")
-
         friendEmailRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
             }

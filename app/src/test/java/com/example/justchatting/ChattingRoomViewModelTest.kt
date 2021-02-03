@@ -1,11 +1,14 @@
 package com.example.justchatting
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.justchatting.data.DTO.Message
 import com.example.justchatting.data.DTO.UserModel
+import com.example.justchatting.di.viewModelModule
 import com.example.justchatting.repository.chattingRoom.ChattingRoomRepository
 import com.example.justchatting.ui.chattingRoom.ChattingRoomViewModel
+import io.reactivex.Single
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -15,8 +18,9 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mockito
 import org.mockito.Mockito.times
+import java.lang.Exception
 
-class ChattingRoomTest : AutoCloseKoinTest() {
+class ChattingRoomViewModelTest : AutoCloseKoinTest() {
 
     private val mockRepository: ChattingRoomRepository by inject()
 
@@ -50,30 +54,42 @@ class ChattingRoomTest : AutoCloseKoinTest() {
             mockRepository.getChatLogs()
         ).thenReturn(mockChatLogs)
 
-        chattingRoomViewModel.setListener(chattingRoomViewModel.groupId)
-        val chatLogs = chattingRoomViewModel.getChatLogs()
+        chattingRoomViewModel.setChatLogAddListener(chattingRoomViewModel.groupId)
 
-        Mockito.verify(mockRepository, times(1)).setListener(chattingRoomViewModel.groupId)
-        assertEquals(chatLogs.value!![0].text, "")
+        Mockito.verify(mockRepository, times(1)).setChatLogAddListener(chattingRoomViewModel.groupId)
+        assertEquals(chattingRoomViewModel.getChatLogs().value!![0].text, "")
     }
 
     @Test
     fun 대화_기록_불러오기_실패(){
-        
+        val chattingRoomViewModel = ChattingRoomViewModel(mockRepository)
+
+        Mockito.`when`(
+            mockRepository.getChatLogs()
+        ).thenReturn(MutableLiveData<ArrayList<Message>>())
+
+        Mockito.`when`(
+            mockRepository.fetchError()
+        ).thenReturn(MutableLiveData<Boolean>(true))
+
+        assertEquals(chattingRoomViewModel.chatLogFetchError().value, true)
     }
 
     @Test
     fun 대화방_초대_성공(){
         val chattingRoomViewModel = ChattingRoomViewModel(mockRepository)
 
-        val mockUser = HashMap<String, UserModel>()
-        mockUser["uid"] = UserModel(username = "tom")
+        val user = HashMap<String, UserModel>()
+        user["uid"] = UserModel(username = "tom")
 
         chattingRoomViewModel.groupId = "groupId"
-        chattingRoomViewModel.groupMembers = mockUser
 
-        chattingRoomViewModel.addMember()
+        val members = ArrayList<UserModel>()
+        members.add(user["uid"] ?: UserModel())
+        Mockito.`when`(mockRepository.getMembers()).thenReturn(MutableLiveData(members))
 
-        Mockito.verify(mockRepository, times(1)).addMember(mockUser, "groupId")
+        chattingRoomViewModel.addMember(user)
+
+        assertEquals(chattingRoomViewModel.getMembers().value!![0].username, "tom")
     }
 }

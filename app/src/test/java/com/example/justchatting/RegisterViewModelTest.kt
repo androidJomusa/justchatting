@@ -15,7 +15,7 @@ import org.koin.test.inject
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 
-class RegistrationTest : AutoCloseKoinTest() {
+class RegisterViewModelTest : AutoCloseKoinTest() {
 
     val mockRepository: AuthRepository by inject()
 //    val registerViewModel: RegisterViewModel by inject()

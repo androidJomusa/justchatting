@@ -13,7 +13,7 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mockito
 
-class LoginTest : AutoCloseKoinTest() {
+class LoginViewModelTest : AutoCloseKoinTest() {
 
     val mockRepository: AuthRepository by inject()
 

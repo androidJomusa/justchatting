@@ -61,4 +61,5 @@ class ChattingRoomViewModel(private val chattingRoomRepository : ChattingRoomRep
         chattingRoomRepository.exit(groupId)
     }
 
+    fun chatLogFetchError() = chattingRoomRepository.fetchError()
 }

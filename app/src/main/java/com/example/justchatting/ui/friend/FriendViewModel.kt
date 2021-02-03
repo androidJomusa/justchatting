@@ -13,7 +13,8 @@ import com.example.justchatting.ui.friend.FriendFragment.AddResult
 class FriendViewModel(private val friendRepository : FriendRepository, application: Application) : AndroidViewModel(application), KoinComponent{
 
     private val selectGroupRepository : SelectGroupRepository by inject()
-    private var friends : HashMap<String, UserModel> = HashMap()
+    var friends : HashMap<String, UserModel> = HashMap()
+        private set
 
     fun setFriendListChangeListener(){
         friendRepository.setFriendListChangeListener(friends)

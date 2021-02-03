@@ -7,18 +7,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class ChattingFirebaseSource {
-
     private var chattingRoomMap = HashMap<String, ChattingRoom>()
     val uid = FirebaseAuth.getInstance().uid
     private var _chattingRooms : MutableLiveData<ArrayList<ChattingRoom>> = MutableLiveData()
     val chattingRooms : LiveData<ArrayList<ChattingRoom>>
         get() =  _chattingRooms
+    private val _roomFetchError: MutableLiveData<Boolean> = MutableLiveData()
+    val roomFetchError : LiveData<Boolean>
+        get() = _roomFetchError
 
     fun setChattingRoomListChangeListener() {
 
         val userGroupRef = FirebaseDatabase.getInstance().getReference("/user_groups/$uid")
         userGroupRef.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(error: DatabaseError) {
+                _roomFetchError.value = true
             }
 
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
@@ -61,6 +64,7 @@ class ChattingFirebaseSource {
             }
         })
     }
+
     private fun getChattingArrayList(): ArrayList<ChattingRoom> {
         val arrayList = ArrayList(chattingRoomMap.values)
         arrayList.sortByDescending { it.timeStamp }

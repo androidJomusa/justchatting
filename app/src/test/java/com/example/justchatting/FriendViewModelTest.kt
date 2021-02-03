@@ -19,15 +19,16 @@ import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.times
 import org.mockito.MockitoAnnotations
+import kotlin.text.Typography.times
 
-class FriendTest : AutoCloseKoinTest(){
+class FriendViewModelTest : AutoCloseKoinTest(){
 
     val friendRepository: FriendRepository by inject()
 
     @Mock
     lateinit var application: Application
-
 
     @get:Rule
     val koinTestRule = KoinTestRule.create {
@@ -60,19 +61,17 @@ class FriendTest : AutoCloseKoinTest(){
         Mockito.`when`(friendRepository.getUsers()).thenReturn(MutableLiveData(arrayList))
 
         val friendViewModel = FriendViewModel( friendRepository, application)
-        friendViewModel.getUsers().observeForever{}
 
         Assert.assertEquals(friendViewModel.getUsers().value!![0].username, "tom")
     }
 
     @Test
     fun 친구목록_불러오기_실패() {
-        Mockito.`when`(friendRepository.getUsers()).thenReturn(MutableLiveData(ArrayList()))
+        Mockito.`when`(friendRepository.getUsers()).thenReturn(MutableLiveData())
 
         val friendViewModel = FriendViewModel(friendRepository, application)
-        friendViewModel.getUsers().observeForever{}
 
-        Assert.assertTrue(friendViewModel.getUsers().value!!.isEmpty())
+        Assert.assertEquals(friendViewModel.getUsers().value, null)
     }
 
     @Test
@@ -81,8 +80,9 @@ class FriendTest : AutoCloseKoinTest(){
             .thenReturn(MutableLiveData(Event(FriendFragment.AddResult.SUCCESS)))
 
         val friendViewModel = FriendViewModel(friendRepository, application)
-        friendViewModel.isValidToAdd().observeForever{}
+        friendViewModel.addFriendWithId("id")
 
+        Mockito.verify(friendRepository, times(1)).addFriendWithEmail("id", friendViewModel.friends)
         Assert.assertEquals(friendViewModel.isValidToAdd().value!!.peekContent(), FriendFragment.AddResult.SUCCESS)
     }
 
@@ -92,8 +92,9 @@ class FriendTest : AutoCloseKoinTest(){
             .thenReturn(MutableLiveData(Event(FriendFragment.AddResult.EXIST)))
 
         val friendViewModel = FriendViewModel(friendRepository, application)
-        friendViewModel.isValidToAdd().observeForever{}
+        friendViewModel.addFriendWithId("id")
 
+        Mockito.verify(friendRepository, times(1)).addFriendWithEmail("id", friendViewModel.friends)
         Assert.assertEquals(friendViewModel.isValidToAdd().value!!.peekContent(), FriendFragment.AddResult.EXIST)
     }
 
@@ -103,8 +104,9 @@ class FriendTest : AutoCloseKoinTest(){
             .thenReturn(MutableLiveData(Event(FriendFragment.AddResult.FAILED)))
 
         val friendViewModel = FriendViewModel(friendRepository, application)
-        friendViewModel.isValidToAdd().observeForever{}
+        friendViewModel.addFriendWithId("id")
 
+        Mockito.verify(friendRepository, times(1)).addFriendWithEmail("id", friendViewModel.friends)
         Assert.assertEquals(friendViewModel.isValidToAdd().value!!.peekContent(), FriendFragment.AddResult.FAILED)
     }
 }
